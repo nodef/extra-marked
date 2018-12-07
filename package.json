@@ -1,0 +1,34 @@
+{
+  "name": "extra-marked",
+  "version": "0.0.1",
+  "description": "A markdown parser and compiler. Built for speed, and with terminal viewer.",
+  "main": "index.js",
+  "scripts": {
+    "test": "exit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nodef/extra-marked.git"
+  },
+  "keywords": [
+    "extra",
+    "marked",
+    "markdown",
+    "parser",
+    "compiler",
+    "markup",
+    "html",
+    "terminal",
+    "view",
+    "shell",
+    "cli",
+    "console",
+    "merferry"
+  ],
+  "author": "wolfram77@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nodef/extra-marked/issues"
+  },
+  "homepage": "https://github.com/nodef/extra-marked#readme"
+}
