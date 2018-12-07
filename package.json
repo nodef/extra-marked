@@ -1,6 +1,6 @@
 {
   "name": "extra-marked",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A markdown parser and compiler. Built for speed, and with terminal viewer.",
   "main": "index.js",
   "scripts": {
@@ -30,5 +30,8 @@
   "bugs": {
     "url": "https://github.com/nodef/extra-marked/issues"
   },
-  "homepage": "https://github.com/nodef/extra-marked#readme"
+  "homepage": "https://github.com/nodef/extra-marked#readme",
+  "dependencies": {
+    "marked": "0"
+  }
 }
