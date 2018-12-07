@@ -2,8 +2,11 @@ const kleur = require('kleur');
 const Table = require('cli-table');
 const cardinal = require('cardinal');
 const emoji = require('node-emoji');
+const boolean = require('boolean');
+const color = require('./color');
 
 
+// Global variables.
 var TABLE_CELL_SPLIT = '^*||*^';
 var TABLE_ROW_WRAP = '*|*|*|*';
 var TABLE_ROW_WRAP_REGEXP = new RegExp(escapeRegExp(TABLE_ROW_WRAP), 'g');
@@ -21,36 +24,62 @@ var HARD_RETURN = '\r',
     HARD_RETURN_RE = new RegExp(HARD_RETURN),
     HARD_RETURN_GFM_RE = new RegExp(HARD_RETURN + '|<br\\s*/?>');
 
-var defaultOptions = {
-  code: kleur.yellow,
-  blockquote: kleur.gray().italic,
-  html: kleur.gray,
-  heading: kleur.green().bold,
-  firstHeading: kleur.magenta().underline().bold,
-  hr: kleur.reset,
-  listitem: kleur.reset,
+var E = process.env;
+var OPTIONS = {
+  code: color(E['MARKED_VIEW_CODE']||'yellow'),
+  blockquote: color(E['MARKED_VIEW_BLOCKQUOTE']||'gray.italic'),
+  html: color(E['MARKED_VIEW_HTML']||'gray'),
+  heading: color(E['MARKED_VIEW_HEADING']||'green.bold'),
+  firstHeading: color(E['MARKED_VIEW_FIRSTHEADING']||'magenta.underline.bold'),
+  hr: color(E['MARKED_VIEW_HR']||'reset'),
+  listitem: color(E['MARKED_VIEW_LISTITEM']||'reset'),
   list: list,
-  table: kleur.reset,
-  paragraph: kleur.reset,
-  strong: kleur.bold,
-  em: kleur.italic,
-  codespan: kleur.yellow,
-  del: kleur.dim().gray().strikethrough,
-  link: kleur.blue,
-  href: kleur.blue().underline,
-  text: identity,
-  unescape: true,
-  emoji: true,
-  width: 80,
-  showSectionPrefix: true,
-  reflowText: false,
-  tab: 4,
+  table: color(E['MARKED_VIEW_TABLE']||'reset'),
+  paragraph: color(E['MARKED_VIEW_PARAGRAPH']||'reset'),
+  strong: color(E['MARKED_VIEW_STRONG']||'bold'),
+  em: color(E['MARKED_VIEW_EM']||'italic'),
+  codespan: color(E['MARKED_VIEW_CODESPAN']||'yellow'),
+  del: color(E['MARKED_VIEW_DEL']||'dim.gray.strikethrough'),
+  link: color(E['MARKED_VIEW_LINK']||'blue'),
+  href: color(E['MARKED_VIEW_HREF']||'blue.underline'),
+  text: color(E['MARKED_VIEW_TEXT']||''),
+  unescape: boolean(E['MARKED_VIEW_UNESCAPE']||'1'),
+  emoji: boolean(E['MARKED_VIEW_EMOJI']||'1'),
+  width: parseInt(E['MARKED_VIEW_WIDTH']||'80', 10),
+  showSectionPrefix: boolean(E['MARKED_VIEW_SHOWSECTIONPREFIX']||'1'),
+  showHref: boolean(E['MARKED_VIEW_SHOWHREF']||'0'),
+  reflowText: boolean(E['MARKED_VIEW_REFLOWTEXT']||'0'),
+  tab: parseInt(E['MARKED_VIEW_TAB']||'4', 10),
   tableOptions: {}
 };
 
-function Renderer(options, highlightOptions) {
-  this.o = Object.assign({}, defaultOptions, options);
-  this.tab = sanitizeTab(this.o.tab, defaultOptions.tab);
+
+// Get object key.
+function objectKey(obj, key) {
+  var re = new RegExp(`^${key}$`, 'i');
+  for(var k in obj)
+    if(re.test(k)) return k;
+  return null;
+};
+
+// Get options from arguments.
+function options(o, k, a, i) {
+  var no = k.startsWith('--no-');
+  var k = k.substring(no? 5:2).replace(/\W+/g, '');
+  k = objectKey(OPTIONS, k);
+  if(k==null) throw new Error('unknown option '+k);
+  if(no) { o[k] = false; return i+1; }
+  var v = OPTIONS[k];
+  if(typeof v==='boolean') o[k] = true;
+  else if(typeof v==='number') o[k] = parseInt(a[++i], 10);
+  else if(typeof v==='function') o[k] = color(a[++i]);
+  else o[k] = a[++i];
+  return i+1;
+};
+
+function View(options, highlightOptions) {
+  this.o = Object.assign({}, OPTIONS, options);
+  this.tab = sanitizeTab(this.o.tab, OPTIONS.tab);
   this.tableSettings = this.o.tableOptions;
   this.emoji = this.o.emoji ? insertEmojis : identity;
   this.unescape = this.o.unescape ? unescapeEntities : identity;
@@ -65,32 +94,32 @@ function textLength(str) {
   return str.replace(/\u001b\[(?:\d{1,3})(?:;\d{1,3})*m/g, "").length;
 };
 
-Renderer.prototype.textLength = textLength;
+View.prototype.textLength = textLength;
 
 function fixHardReturn(text, reflow) {
   return reflow ? text.replace(HARD_RETURN, /\n/g) : text;
 }
 
-Renderer.prototype.text = function (text) {
+View.prototype.text = function (text) {
   return this.o.text(text);
 };
 
-Renderer.prototype.code = function(code, lang, escaped) {
+View.prototype.code = function(code, lang, escaped) {
   return section(indentify(
     this.tab,
     highlight(code, lang, this.o, this.highlightOptions)
   ));
 };
 
-Renderer.prototype.blockquote = function(quote) {
+View.prototype.blockquote = function(quote) {
   return section(this.o.blockquote(indentify(this.tab, quote.trim())));
 };
 
-Renderer.prototype.html = function(html) {
+View.prototype.html = function(html) {
   return this.o.html(html);
 };
 
-Renderer.prototype.heading = function(text, level, raw) {
+View.prototype.heading = function(text, level, raw) {
   text = this.transform(text);
 
   var prefix = this.o.showSectionPrefix ?
@@ -102,16 +131,16 @@ Renderer.prototype.heading = function(text, level, raw) {
   return section(level === 1 ? this.o.firstHeading(text) : this.o.heading(text));
 };
 
-Renderer.prototype.hr = function() {
+View.prototype.hr = function() {
   return section(this.o.hr(hr('-', this.o.reflowText && this.o.width)));
 };
 
-Renderer.prototype.list = function(body, ordered) {
+View.prototype.list = function(body, ordered) {
   body = this.o.list(body, ordered, this.tab);
   return section(fixNestedLists(indentLines(this.tab, body), this.tab));
 };
 
-Renderer.prototype.listitem = function(text) {
+View.prototype.listitem = function(text) {
   var transform = compose(this.o.listitem, this.transform);
   var isNested = text.indexOf('\n') !== -1;
   if (isNested) text = text.trim();
@@ -120,11 +149,11 @@ Renderer.prototype.listitem = function(text) {
   return '\n' + BULLET_POINT + transform(text);
 };
 
-Renderer.prototype.checkbox = function(checked) {
+View.prototype.checkbox = function(checked) {
   return '[' + (checked ? "X" : " ") + '] ';
 };
 
-Renderer.prototype.paragraph = function(text) {
+View.prototype.paragraph = function(text) {
   var transform = compose(this.o.paragraph, this.transform);
   text = transform(text);
   if (this.o.reflowText) {
@@ -133,7 +162,7 @@ Renderer.prototype.paragraph = function(text) {
   return section(text);
 };
 
-Renderer.prototype.table = function(header, body) {
+View.prototype.table = function(header, body) {
   var table = new Table(Object.assign({}, {
       head: generateTableRow(header)[0]
   }, this.tableSettings));
@@ -144,38 +173,38 @@ Renderer.prototype.table = function(header, body) {
   return section(this.o.table(table.toString()));
 };
 
-Renderer.prototype.tablerow = function(content) {
+View.prototype.tablerow = function(content) {
   return TABLE_ROW_WRAP + content + TABLE_ROW_WRAP + '\n';
 };
 
-Renderer.prototype.tablecell = function(content, flags) {
+View.prototype.tablecell = function(content, flags) {
   return content + TABLE_CELL_SPLIT;
 };
 
-// span level renderer
-Renderer.prototype.strong = function(text) {
+// span level View
+View.prototype.strong = function(text) {
   return this.o.strong(text);
 };
 
-Renderer.prototype.em = function(text) {
+View.prototype.em = function(text) {
   text = fixHardReturn(text, this.o.reflowText);
   return this.o.em(text);
 };
 
-Renderer.prototype.codespan = function(text) {
+View.prototype.codespan = function(text) {
   text = fixHardReturn(text, this.o.reflowText);
   return this.o.codespan(text.replace(/:/g, COLON_REPLACER));
 };
 
-Renderer.prototype.br = function() {
+View.prototype.br = function() {
   return this.o.reflowText ? HARD_RETURN : '\n';
 };
 
-Renderer.prototype.del = function(text) {
+View.prototype.del = function(text) {
   return this.o.del(text);
 };
 
-Renderer.prototype.link = function(href, title, text) {
+View.prototype.link = function(href, title, text) {
   if (this.options.sanitize) {
     try {
       var prot = decodeURIComponent(unescape(href))
@@ -192,25 +221,26 @@ Renderer.prototype.link = function(href, title, text) {
   var hasText = text && text !== href;
 
   var out = '';
-  if (hasText) out += this.emoji(text) + (this.options.links? ' (':'');
-  if(this.options.links) out +=  this.o.href(href);
-  if (hasText) out += this.options.links? ')':'';
+  if (hasText) out += this.emoji(text) + (this.o.showHref? ' (':'');
+  if(this.o.showHref) out +=  this.o.href(href);
+  if (hasText) out += this.o.showHref? ')':'';
 
   return this.o.link(out);
 };
 
-Renderer.prototype.image = function(href, title, text) {
+View.prototype.image = function(href, title, text) {
   var out = '!['+text;
   if (title) out += ' – ' + title;
   return out + '](' + href + ')\n';
 };
 
-module.exports = Renderer;
+View.options = options;
+module.exports = View;
 
 // Munge \n's and spaces in "text" so that the number of
 // characters between \n's is less than or equal to "width".
 function reflowText (text, width, gfm) {
-  // Hard break was inserted by Renderer.prototype.br or is
+  // Hard break was inserted by View.prototype.br or is
   // <br /> when gfm is true
   var splitRe = gfm ? HARD_RETURN_GFM_RE : HARD_RETURN_RE,
       sections = text.split(splitRe),
