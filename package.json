@@ -1,8 +1,12 @@
 {
   "name": "extra-marked",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "A markdown parser and compiler. Built for speed, and with terminal viewer.",
   "main": "index.js",
+  "preferGlobal": true,
+  "bin": {
+    "marked": "index.js"
+  },
   "scripts": {
     "test": "exit"
   },

@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 const getStdin = require('get-stdin');
 const boolean = require('boolean');
 const marked = require('marked');
