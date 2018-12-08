@@ -96,7 +96,7 @@ async function shell(a) {
   if(!process.stdout.isTTY) console.log(out);
   var tmp = tempy.file({extension: 'txt'});
   fs.writeFileSync(tmp, out);
-  cp.execSync('less -f -r '+tmp, {stdio: STDIO});
+  cp.execSync(`cat ${tmp} | less -r`, {stdio: STDIO});
   fs.unlinkSync(tmp);
 };
 
