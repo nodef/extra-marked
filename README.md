@@ -64,6 +64,7 @@ marked [options] <input>
 # --sanitize:     enable sanitizing the HTML passed into markdownString with the sanitizer function (0)
 # --silent:       enable silent parsing (0)
 # --smartlists:   enable using smarter list behavior than those found in markdown.pl (0)
+# --smartypants:  enable using "smart" typographic punctuation for things like quotes and dashes (0)
 # --tables:       enable using GFM tables extension, when gfm is also enabled (1)
 # --xhtml:        enable emitting self-closing HTML tags for void elements (<br/>, <img/>, etc.) with a "/" as required by XHTML (0)
 # --no-breaks:     disable breaks
@@ -118,10 +119,11 @@ $MARKED_HEADERIDS    # enable including id attribute when emitting headings (1)
 $MARKED_HEADERPREFIX # set string to prefix the id attribute when emitting headings
 $MARKED_LANGPREFIX   # set string to prefix the className in a <code> block. useful for syntax highlighting (language-)
 $MARKED_MANGLE       # enable escaping autolinked email address with HTML character references (1)
-$MARKED_PEDANTIC     # enable conform to the original markdown.pl as much as possible. dont fix original markdown bugs or behavior. turns off and overrides gfm. (0)
+$MARKED_PEDANTIC     # enable conform to the original markdown.pl as much as possible. dont fix original markdown bugs or behavior. turns off and overrides gfm (0)
 $MARKED_SANITIZE     # enable sanitizing the HTML passed into markdownString with the sanitizer function (0)
 $MARKED_SILENT       # enable silent parsing (0)
 $MARKED_SMARTLISTS   # enable using smarter list behavior than those found in markdown.pl (0)
+$MARKED_SMARTYPANTS  # enable using "smart" typographic punctuation for things like quotes and dashes (0)
 $MARKED_TABLES       # enable using GFM tables extension, when gfm is also enabled (1)
 $MARKED_XHTML        # enable emitting self-closing HTML tags for void elements (<br/>, <img/>, etc.) with a "/" as required by XHTML (0)
 $MARKED_VIEW_CODE         # set code color (yellow)
@@ -176,50 +178,63 @@ marked.view('get **markdown** view', {strong: kleur.red().bold});
 ```javascript
 const marked = require('extra-marked');
 
-googletts(output, text, options={})
-// output:  output audio file
-// text:    input text
-// options: given below
-// -> Promise <topic timetable>
+marked(string)
+// string: input markdown string
+// -> <html>
+
+marked.setOptions(options)
 
 // Default options:
 options = {
-  stdio: [0, 1, 2], // set child process stdio
-  log: false,       // enable log
-  retries: 3,       // set speech synthesis retries
-  credentials: {
-    keyFilename: '' // path to credentials
-    // see other TTS client options below
-  },
-  acodec: 'copy',    // set audio acodec
-  voice: {
-    languageCode: 'en-US',   // set voice language code
-    ssmlGender: 'NEUTRAL'    // set voice SSML gender
-    name: 'en-US-Wavenet-D', // set voice name
-  }
-  quote: {
-    breakTime: 250,           // set quoted text break time
-    emphasisLevel: 'moderate' // set quoted text emphasis level
-  },
-  heading: {
-    breakTime: 4000,         // set heading text break time
-    breakDiff: 250,          // set heading text break difference
-    emphasisLevel: 'strong', // set heading text emphasis level
-  },
-  ellipsis: {
-    breakTime: 1500 // set ellipsis break time
-  },
-  dash: {
-    breakTime: 500  // set dash break time
-  },
-  newline: {
-    breakTime: 1000 // set newline break time
-  },
-  block: {
-    length: 5000,  // set SSMLs block length
-    separator: '.' // set SSMLs block separator
-  }
+  baseUrl: null,           // set prefix URL for any relative link
+  breaks: false,           // enable adding <br> on a single line break. requires GFM enabled
+  gfm: true,               // enable use of GitHub Flavored Markdown specification
+  headerIds: true,         // enable including id attribute when emitting headings
+  headerPrefix: '',        // set string to prefix the id attribute when emitting headings
+  langPrefix: 'language-', // set string to prefix the className in a <code> block. useful for syntax highlighting
+  mangle: true,            // enable escaping autolinked email address with HTML character references
+  pedantic: false,         // enable conform to the original markdown.pl as much as possible. dont fix original markdown bugs or behavior. turns off and overrides gfm
+  sanitize: false,         // enable sanitizing the HTML passed into markdownString with the sanitizer function
+  silent: false,           // enable silent parsing
+  smartLists: false,       // enable using smarter list behavior than those found in markdown.pl
+  smartypants: false,      // enable using "smart" typographic punctuation for things like quotes and dashes
+  tables: true,            // enable using GFM tables extension, when gfm is also enabled
+  xhtml: false             // enable emitting self-closing HTML tags for void elements (<br/>, <img/>, etc.) with a "/" as required by XHTML
 }
+
+
+marked.view(string, options)
+// string: input markdown string
+// -> <markdown with ansi color codes>
+
+// Default options:
+OPTIONS = {
+  code: color(E['MARKED_VIEW_CODE']||'yellow'),
+  blockquote: color(E['MARKED_VIEW_BLOCKQUOTE']||'gray.italic'),
+  html: color(E['MARKED_VIEW_HTML']||'gray'),
+  heading: color(E['MARKED_VIEW_HEADING']||'green.bold'),
+  firstHeading: color(E['MARKED_VIEW_FIRSTHEADING']||'magenta.underline.bold'),
+  hr: color(E['MARKED_VIEW_HR']||'reset'),
+  listitem: color(E['MARKED_VIEW_LISTITEM']||'reset'),
+  list: list,
+  table: color(E['MARKED_VIEW_TABLE']||'reset'),
+  paragraph: color(E['MARKED_VIEW_PARAGRAPH']||'reset'),
+  strong: color(E['MARKED_VIEW_STRONG']||'bold'),
+  em: color(E['MARKED_VIEW_EM']||'italic'),
+  codespan: color(E['MARKED_VIEW_CODESPAN']||'yellow'),
+  del: color(E['MARKED_VIEW_DEL']||'dim.gray.strikethrough'),
+  link: color(E['MARKED_VIEW_LINK']||'blue'),
+  href: color(E['MARKED_VIEW_HREF']||'blue.underline'),
+  text: color(E['MARKED_VIEW_TEXT']||''),
+  unescape: boolean(E['MARKED_VIEW_UNESCAPE']||'1'),
+  emoji: boolean(E['MARKED_VIEW_EMOJI']||'1'),
+  width: parseInt(E['MARKED_VIEW_WIDTH']||'80', 10),
+  showSectionPrefix: boolean(E['MARKED_VIEW_SHOWSECTIONPREFIX']||'1'),
+  showHref: boolean(E['MARKED_VIEW_SHOWHREF']||'0'),
+  reflowText: boolean(E['MARKED_VIEW_REFLOWTEXT']||'0'),
+  tab: parseInt(E['MARKED_VIEW_TAB']||'4', 10),
+  tableOptions: {}
+};
 ```
 <br>
 

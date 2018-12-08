@@ -1,6 +1,6 @@
 {
   "name": "extra-marked",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A markdown parser, compiler, and viewer (via \"marked\").",
   "main": "index.js",
   "preferGlobal": true,
