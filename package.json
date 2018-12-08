@@ -1,6 +1,6 @@
 {
   "name": "extra-marked",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "A markdown parser and compiler. Built for speed, and with terminal viewer.",
   "main": "index.js",
   "preferGlobal": true,
@@ -42,7 +42,6 @@
     "get-stdin": "^6.0.0",
     "kleur": "^3.0.0",
     "marked": "0",
-    "node-emoji": "^1.8.1",
-    "tempy": "^0.2.1"
+    "node-emoji": "^1.8.1"
   }
 }

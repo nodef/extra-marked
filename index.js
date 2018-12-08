@@ -3,7 +3,6 @@ const getStdin = require('get-stdin');
 const boolean = require('boolean');
 const marked = require('marked');
 const kleur = require('kleur');
-const tempy = require('tempy');
 const cp = require('child_process');
 const path = require('path');
 const fs = require('fs');
@@ -13,6 +12,11 @@ const View = require('./view');
 // Global variables.
 const E = process.env;
 const OPTIONS = {
+  output: E['MARKED_OUTPUT']||null,
+  input: E['MARKED_INPUT']||null,
+  string: E['MARKED_STRING']||null,
+  tokens: boolean(E['MARKED_TOKENS']||'0'),
+  views: boolean(E['MARKED_VIEW']||'0'),
   baseUrl: E['MARKED_BASEURL']||null,
   breaks: boolean(E['MARKED_BREAKS']||'0'),
   gfm: boolean(E['MARKED_GFM']||'1'),
@@ -83,34 +87,35 @@ marked.options = options;
 module.exports = marked;
 
 // Get output.
-async function output(o) {
+async function shellOutput(o) {
   var inp = o.string;
   if(!inp && o.input) inp = fs.readFileSync(o.input, 'utf8');
   if(!inp && o.files.length>0) inp = fs.readFileSync(o.files.pop(), 'utf8');
   if(!inp) inp = await getStdin();
   marked.setOptions(o);
   var out = o.views? view(inp, o.view):marked(inp);
-  if(o.output) return fs.writeFileSync(o.output, out);
-  if(!process.stdout.isTTY) console.log(out);
-  var tmp = tempy.file({extension: 'txt'});
-  fs.writeFileSync(tmp, out);
-  cp.execSync(`cat ${tmp} | less -r`, {stdio: STDIO});
-  fs.unlinkSync(tmp);
+  if(o.output) fs.writeFileSync(o.output, out);
+  else console.log(out);
 };
 
-// Command line interface.
-function shell(a) {
+// Direct output command-line interface.
+function shellBasic(a) {
   var o = {};
   for(var i=2, I=a.length; i<I;)
     i = options(o, a[i], a, i);
-  if(!o.help) return output(o);
+  if(!o.help) return shellOutput(o);
   var input = path.join(__dirname, 'README.md');
-  return output({input, views: true});
+  return shellOutput({input, views: true});
 };
 
-// Error logged command line interface.
-async function shellResilient(a) {
-  try { await shell(a); }
+// Command-line interface.
+function shell(a) {
+  var out = !process.stdout.isTTY;
+  for(var i=2, I=a.length; i<I && !out; i++)
+    if(a[i]==='-o' || a[i]==='--output') out = true;
+  try { if(out) return shellBasic(a); }
   catch(e) { console.error('error:', e.message); }
+  var args = a.map(a => `"${a}"`).join(' ')+(process.stdout.isTTY? ' -v':'');
+  cp.execSync(args+' | less -r', {cwd: process.cwd(), stdio: STDIO});
 };
-if(require.main===module) shellResilient(process.argv);
+if(require.main===module) shell(process.argv);
