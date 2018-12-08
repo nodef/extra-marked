@@ -203,37 +203,38 @@ options = {
 }
 
 
+const kleur = require('kleur');
 marked.view(string, options)
 // string: input markdown string
 // -> <markdown with ansi color codes>
 
 // Default options:
-OPTIONS = {
-  code: color(E['MARKED_VIEW_CODE']||'yellow'),
-  blockquote: color(E['MARKED_VIEW_BLOCKQUOTE']||'gray.italic'),
-  html: color(E['MARKED_VIEW_HTML']||'gray'),
-  heading: color(E['MARKED_VIEW_HEADING']||'green.bold'),
-  firstHeading: color(E['MARKED_VIEW_FIRSTHEADING']||'magenta.underline.bold'),
-  hr: color(E['MARKED_VIEW_HR']||'reset'),
-  listitem: color(E['MARKED_VIEW_LISTITEM']||'reset'),
-  list: list,
-  table: color(E['MARKED_VIEW_TABLE']||'reset'),
-  paragraph: color(E['MARKED_VIEW_PARAGRAPH']||'reset'),
-  strong: color(E['MARKED_VIEW_STRONG']||'bold'),
-  em: color(E['MARKED_VIEW_EM']||'italic'),
-  codespan: color(E['MARKED_VIEW_CODESPAN']||'yellow'),
-  del: color(E['MARKED_VIEW_DEL']||'dim.gray.strikethrough'),
-  link: color(E['MARKED_VIEW_LINK']||'blue'),
-  href: color(E['MARKED_VIEW_HREF']||'blue.underline'),
-  text: color(E['MARKED_VIEW_TEXT']||''),
-  unescape: boolean(E['MARKED_VIEW_UNESCAPE']||'1'),
-  emoji: boolean(E['MARKED_VIEW_EMOJI']||'1'),
-  width: parseInt(E['MARKED_VIEW_WIDTH']||'80', 10),
-  showSectionPrefix: boolean(E['MARKED_VIEW_SHOWSECTIONPREFIX']||'1'),
-  showHref: boolean(E['MARKED_VIEW_SHOWHREF']||'0'),
-  reflowText: boolean(E['MARKED_VIEW_REFLOWTEXT']||'0'),
-  tab: parseInt(E['MARKED_VIEW_TAB']||'4', 10),
-  tableOptions: {}
+options = {
+  code: kleur.yellow,              // set code color
+  blockquote: kleur.gray().italic, // set blockquote color
+  html: kleur.gray,                // set html color
+  heading: kleur.green().bold,     // set heading color
+  firstHeading: kleur.magenta().underline().bold, // set first heading color
+  hr: kleur.reset,                 // set hr color
+  listitem: kleur.reset,           // set list item color
+  list: /* list function */,       // set list function
+  table: kleur.reset,              // set table color
+  paragraph: kleur.reset,          // set paragraph color
+  strong: kleur.bold,              // set strong color
+  em: kleur.italic,                // set em color
+  codespan: kleur.yellow,          // set code span color
+  del: kleur.dim().gray().strikethrough,          // set del color
+  link: kleur.blue,                // set link color
+  href: kleur.blue().underline,    // set href color
+  text: a => a,                    // set text color
+  unescape: true,                  // enable unescape
+  emoji: true,                     // enable emoji
+  width: 80,                       // set width
+  showSectionPrefix: true,         // enable show section prefix
+  showHref: false,                 // enable show href
+  reflowText: false,               // enable reflow text
+  tab: 4,                          // set tab
+  tableOptions: {}                 // set table options
 };
 ```
 <br>
@@ -242,34 +243,25 @@ OPTIONS = {
 ## similar
 
 Do you need anything similar?
-- [extra-youtubeuploader] can upload videos with caption to YouTube.
-- [extra-stillvideo] can generate video from audio and image.
+- [parse5] can parse and serialize HTML.
+- [esprima] can parse an JavaScript program.
 
 Suggestions are welcome. Please [create an issue].
 <br><br>
 
 
 [![nodef](https://i.imgur.com/LPVfMny.jpg)](https://nodef.github.io)
-> References: [SSML], [TTS voices], [TTS client docs].
+> References: [marked-terminal], [markcat], [kleur].
 
 ["marked"]: https://www.npmjs.com/package/marked
 
 [Node.js]: https://nodejs.org/en/download/
 [console]: https://en.wikipedia.org/wiki/Shell_(computing)#Text_(CLI)_shells
-[Enable API]: https://console.cloud.google.com/flows/enableapi?apiid=texttospeech.googleapis.com
-[Setup authentication]: https://cloud.google.com/docs/authentication/getting-started
 
-[account]: https://accounts.google.com/signup
-[Google Cloud Platform]: https://console.developers.google.com/
-[new project]: https://console.cloud.google.com/projectcreate
-[Cloud Text-to-Speech API]: https://console.cloud.google.com/apis/library/texttospeech.googleapis.com
-[credentials]: https://console.cloud.google.com/apis/credentials/wizard
-[RapidEE]: https://www.rapidee.com/en/about
+[parse5]: https://www.npmjs.com/package/parse5
+[esprima]: https://www.npmjs.com/package/esprima
+[create an issue]: https://github.com/nodef/extra-marked/issues
 
-[extra-stillvideo]: https://www.npmjs.com/package/extra-stillvideo
-[extra-youtubeuploader]: https://www.npmjs.com/package/extra-youtubeuploader
-[create an issue]: https://github.com/nodef/extra-googletts/issues
-
-[SSML]: https://developers.google.com/actions/reference/ssml
-[TTS voices]: https://cloud.google.com/text-to-speech/docs/voices
-[TTS client docs]: https://cloud.google.com/nodejs/docs/reference/text-to-speech/0.1.x/v1beta1.TextToSpeechClient
+[marked-terminal]: https://www.npmjs.com/package/marked-terminal
+[markcat]: https://www.npmjs.com/package/markcat
+[kleur]: https://www.npmjs.com/package/kleur
