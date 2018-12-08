@@ -5,6 +5,7 @@ const marked = require('marked');
 const kleur = require('kleur');
 const tempy = require('tempy');
 const cp = require('child_process');
+const path = require('path');
 const fs = require('fs');
 const View = require('./view');
 
@@ -81,12 +82,8 @@ marked.view = view;
 marked.options = options;
 module.exports = marked;
 
-// Command line interface.
-async function shell(a) {
-  var o = {};
-  for(var i=2, I=a.length; i<I;)
-    i = options(o, a[i], a, i);
-  if(o.help) {}
+// Get output.
+async function output(o) {
   var inp = o.string;
   if(!inp && o.input) inp = fs.readFileSync(o.input, 'utf8');
   if(!inp && o.files.length>0) inp = fs.readFileSync(o.files.pop(), 'utf8');
@@ -99,6 +96,16 @@ async function shell(a) {
   fs.writeFileSync(tmp, out);
   cp.execSync(`cat ${tmp} | less -r`, {stdio: STDIO});
   fs.unlinkSync(tmp);
+};
+
+// Command line interface.
+function shell(a) {
+  var o = {};
+  for(var i=2, I=a.length; i<I;)
+    i = options(o, a[i], a, i);
+  if(!o.help) return output(o);
+  var input = path.join(__dirname, 'README.md');
+  return output({input, views: true});
 };
 
 // Error logged command line interface.
