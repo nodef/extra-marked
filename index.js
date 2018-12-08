@@ -1,3 +1,4 @@
+const getStdin = require('get-stdin');
 const marked = require('marked');
 const kleur = require('kleur');
 const fs = require('fs');
@@ -75,8 +76,24 @@ marked.options = options;
 module.exports = marked;
 
 // Command line interface.
-function shell(a) {
-  var dat = fs.readFileSync(a[2], 'utf8');
-  console.log(view(dat));
+async function shell(a) {
+  var o = {};
+  for(var i=2, I=a.length; i<I;)
+    i = options(o, a[i], a, i);
+  if(o.help) {}
+  var inp = o.string;
+  if(!inp && o.input) inp = fs.readFileSync(o.input, 'utf8');
+  if(!inp && o.files.length>1) inp = fs.readFileSync(o.files.pop(), 'utf8');
+  if(!inp) inp = await getStdin();
+  marked.setOptions(o);
+  var out = o.views? view(inp, o.view):marked(inp);
+  if(o.output) fs.writeFileSync(o.output, out);
+  else console.log(out);
 };
-if(require.main===module) shell(process.argv);
+
+// Error logged command line interface.
+async function shellResilient(a) {
+  try { await shell(a); }
+  catch(e) { console.error('error:', e.message); }
+};
+if(require.main===module) shellResilient(process.argv);

@@ -3,10 +3,10 @@ const Table = require('cli-table');
 const cardinal = require('cardinal');
 const emoji = require('node-emoji');
 const boolean = require('boolean');
-const color = require('./color');
 
 
 // Global variables.
+var E = process.env;
 var TABLE_CELL_SPLIT = '^*||*^';
 var TABLE_ROW_WRAP = '*|*|*|*';
 var TABLE_ROW_WRAP_REGEXP = new RegExp(escapeRegExp(TABLE_ROW_WRAP), 'g');
@@ -24,7 +24,23 @@ var HARD_RETURN = '\r',
     HARD_RETURN_RE = new RegExp(HARD_RETURN),
     HARD_RETURN_GFM_RE = new RegExp(HARD_RETURN + '|<br\\s*/?>');
 
-var E = process.env;
+
+// Get same value.
+function identity (str) {
+  return str;
+}
+
+// Get color function from text.
+function color(txt) {
+  var z = identity;
+  for(var p of txt.split(/\W+/)) {
+    var y = z===identity? kleur[p]:z()[p];
+    z = y? y:z;
+  }
+  return z;
+};
+
+
 var OPTIONS = {
   code: color(E['MARKED_VIEW_CODE']||'yellow'),
   blockquote: color(E['MARKED_VIEW_BLOCKQUOTE']||'gray.italic'),
@@ -478,10 +494,6 @@ function unescapeEntities(html) {
       .replace(/&gt;/g, '>')
       .replace(/&quot;/g, '"')
       .replace(/&#39;/g, "'");
-}
-
-function identity (str) {
-  return str;
 }
 
 function compose () {
