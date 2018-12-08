@@ -16,7 +16,7 @@ const OPTIONS = {
   input: E['MARKED_INPUT']||null,
   string: E['MARKED_STRING']||null,
   tokens: boolean(E['MARKED_TOKENS']||'0'),
-  views: boolean(E['MARKED_VIEW']||'0'),
+  view: boolean(E['MARKED_VIEW']||'0')? {}:null,
   baseUrl: E['MARKED_BASEURL']||null,
   breaks: boolean(E['MARKED_BREAKS']||'0'),
   gfm: boolean(E['MARKED_GFM']||'1'),
@@ -33,6 +33,7 @@ const OPTIONS = {
   xhtml: boolean(E['MARKED_XHTML']||'0')
 };
 const STDIO = [0, 1, 2];
+marked.setOptions(OPTIONS);
 
 
 // Get object key.
@@ -56,16 +57,15 @@ function view(dat, o) {
 
 // Get options from arguments.
 function options(o, k, a, i) {
-  o.view = o.view||{};
   o.files = o.files||[];
   if(a[i]==='-h' || a[i]==='--help') o.help = true;
   else if(a[i]==='-o' || a[i]==='--output') o.output = a[++i];
   else if(a[i]==='-i' || a[i]==='--input') o.input = a[++i];
   else if(a[i]==='-s' || a[i]==='--string') o.string = a[++i];
   else if(a[i]==='-t' || a[i]==='--tokens') o.tokens = true;
-  else if(a[i]==='-v' || a[i]==='--view') o.views = true;
-  else if(k.startsWith('--no-view_')) return View.options(o.view, k.replace('-view_', ''), a, i);
-  else if(k.startsWith('--view_')) return View.options(o.view, k.replace('view_', ''), a, i);
+  else if(a[i]==='-v' || a[i]==='--view') o.view = o.view||{};
+  else if(k.startsWith('--no-view_')) return View.options(o.view=o.view||{}, k.replace('-view_', ''), a, i);
+  else if(k.startsWith('--view_')) return View.options(o.view=o.view||{}, k.replace('view_', ''), a, i);
   else if(k.startsWith('--')) {
     var no = k.startsWith('--no-');
     var k = k.substring(no? 5:2).replace(/\W+/g, '');
@@ -93,7 +93,7 @@ async function shellOutput(o) {
   if(!inp && o.files.length>0) inp = fs.readFileSync(o.files.pop(), 'utf8');
   if(!inp) inp = await getStdin();
   marked.setOptions(o);
-  var out = o.views? view(inp, o.view):marked(inp);
+  var out = o.view? view(inp, o.view):marked(inp);
   if(o.output) fs.writeFileSync(o.output, out);
   else console.log(out);
 };
@@ -105,7 +105,7 @@ function shellBasic(a) {
     i = options(o, a[i], a, i);
   if(!o.help) return shellOutput(o);
   var input = path.join(__dirname, 'README.md');
-  return shellOutput({input, views: true});
+  return shellOutput({input, view: {}});
 };
 
 // Command-line interface.

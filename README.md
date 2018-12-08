@@ -154,31 +154,27 @@ $MARKED_VIEW_TAB               # set tab (4)
 ## package
 
 ```javascript
-const googletts = require('extra-googletts');
+const marked = require('extra-marked');
 
-await googletts('out.mp3', 'I want to order a stuffed crust pizza');
-// out.mp3 created (yay!)
+marked('I am using __markdown__.');
+// <p>I am using <strong>markdown</strong>.</p>\n
 
-const fs = require('fs');
-var speech = fs.readFileSync('speech.txt', 'utf8');
-await googletts('speech.mp3', speech)
-// speech.mp3 created from text in speech.txt
+marked.setOptions({headerPrefix: 'topic-'});
+marked('# this is a header');
+// <h1 id="topic-this-is-a-header">this is a header</h1>\n
 
-await googletts('out.mp3', 'Hello 911, my husband is in danger!', {
-  voice: {ssmlGender: 'FEMALE'}
-});
-// out.mp3 created with female voice
+marked.view('get **markdown** view');
+// \u001b[0mget \u001b[1mmarkdown\u001b[22m view\u001b[0m\n\n
 
-await googletts('out.mp3', 'Dead man walking.', {
-  voice: {name: 'en-US-Wavenet-B'}, log: true
-});
-// out.mp3 created with different male voice (log enabled)
+const kleur = require('kleur');
+marked.view('get **markdown** view', {strong: kleur.red().bold});
+// \u001b[0mget \u001b[1m\u001b[31mmarkdown\u001b[39m\u001b[22m view\u001b[0m\n\n
 ```
 
 ### reference
 
 ```javascript
-const googletts = require('extra-googletts');
+const marked = require('extra-marked');
 
 googletts(output, text, options={})
 // output:  output audio file
