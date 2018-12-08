@@ -1,11 +1,15 @@
 const getStdin = require('get-stdin');
+const boolean = require('boolean');
 const marked = require('marked');
 const kleur = require('kleur');
+const tempy = require('tempy');
+const cp = require('child_process');
 const fs = require('fs');
 const View = require('./view');
 
 
 // Global variables.
+const E = process.env;
 const OPTIONS = {
   baseUrl: E['MARKED_BASEURL']||null,
   breaks: boolean(E['MARKED_BREAKS']||'0'),
@@ -22,6 +26,7 @@ const OPTIONS = {
   tables: boolean(E['MARKED_TABLES']||'1'),
   xhtml: boolean(E['MARKED_XHTML']||'0')
 };
+const STDIO = [0, 1, 2];
 
 
 // Get object key.
@@ -83,12 +88,16 @@ async function shell(a) {
   if(o.help) {}
   var inp = o.string;
   if(!inp && o.input) inp = fs.readFileSync(o.input, 'utf8');
-  if(!inp && o.files.length>1) inp = fs.readFileSync(o.files.pop(), 'utf8');
+  if(!inp && o.files.length>0) inp = fs.readFileSync(o.files.pop(), 'utf8');
   if(!inp) inp = await getStdin();
   marked.setOptions(o);
   var out = o.views? view(inp, o.view):marked(inp);
-  if(o.output) fs.writeFileSync(o.output, out);
-  else console.log(out);
+  if(o.output) return fs.writeFileSync(o.output, out);
+  if(!process.stdout.isTTY) console.log(out);
+  var tmp = tempy.file({extension: 'txt'});
+  fs.writeFileSync(tmp, out);
+  cp.execSync('less -f -r '+tmp, {stdio: STDIO});
+  fs.unlinkSync(tmp);
 };
 
 // Error logged command line interface.
