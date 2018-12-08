@@ -186,20 +186,22 @@ marked.setOptions(options)
 
 // Default options:
 options = {
-  baseUrl: null,           // set prefix URL for any relative link
-  breaks: false,           // enable adding <br> on a single line break. requires GFM enabled
-  gfm: true,               // enable use of GitHub Flavored Markdown specification
-  headerIds: true,         // enable including id attribute when emitting headings
-  headerPrefix: '',        // set string to prefix the id attribute when emitting headings
-  langPrefix: 'language-', // set string to prefix the className in a <code> block. useful for syntax highlighting
-  mangle: true,            // enable escaping autolinked email address with HTML character references
-  pedantic: false,         // enable conform to the original markdown.pl as much as possible. dont fix original markdown bugs or behavior. turns off and overrides gfm
-  sanitize: false,         // enable sanitizing the HTML passed into markdownString with the sanitizer function
-  silent: false,           // enable silent parsing
-  smartLists: false,       // enable using smarter list behavior than those found in markdown.pl
-  smartypants: false,      // enable using "smart" typographic punctuation for things like quotes and dashes
-  tables: true,            // enable using GFM tables extension, when gfm is also enabled
-  xhtml: false             // enable emitting self-closing HTML tags for void elements (<br/>, <img/>, etc.) with a "/" as required by XHTML
+  baseUrl: null,            // set prefix URL for any relative link
+  breaks: false,            // enable adding <br> on a single line break. requires GFM enabled
+  gfm: true,                // enable use of GitHub Flavored Markdown specification
+  headerIds: true,          // enable including id attribute when emitting headings
+  headerPrefix: '',         // set string to prefix the id attribute when emitting headings
+  highlight: null,          // set function to highlight code blocks
+  langPrefix: 'language-',  // set string to prefix the className in a <code> block. useful for syntax highlighting
+  mangle: true,             // enable escaping autolinked email address with HTML character references
+  pedantic: false,          // enable conform to the original markdown.pl as much as possible. dont fix original markdown bugs or behavior. turns off and overrides gfm
+  renderer: new Renderer(), // set object containing functions to render tokens to HTML
+  sanitize: false,          // enable sanitizing the HTML passed into markdownString with the sanitizer function
+  silent: false,            // enable silent parsing
+  smartLists: false,        // enable using smarter list behavior than those found in markdown.pl
+  smartypants: false,       // enable using "smart" typographic punctuation for things like quotes and dashes
+  tables: true,             // enable using GFM tables extension, when gfm is also enabled
+  xhtml: false              // enable emitting self-closing HTML tags for void elements (<br/>, <img/>, etc.) with a "/" as required by XHTML
 }
 
 
@@ -250,7 +252,7 @@ Suggestions are welcome. Please [create an issue].
 <br><br>
 
 
-[![nodef](https://i.imgur.com/LPVfMny.jpg)](https://nodef.github.io)
+[![nodef](https://i.imgur.com/T4EGQLy.jpg)](https://nodef.github.io)
 > References: [marked-terminal], [markcat], [kleur].
 
 ["marked"]: https://www.npmjs.com/package/marked
