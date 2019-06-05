@@ -1,6 +1,6 @@
 {
   "name": "extra-marked",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A markdown parser, compiler, and viewer (via \"marked\").",
   "main": "index.js",
   "preferGlobal": true,
@@ -36,12 +36,12 @@
   },
   "homepage": "https://github.com/nodef/extra-marked#readme",
   "dependencies": {
-    "boolean": "^0.2.0",
+    "boolean": "^1.0.0",
     "cardinal": "^2.1.1",
     "cli-table": "^0.3.1",
-    "get-stdin": "^6.0.0",
-    "kleur": "^3.0.0",
+    "get-stdin": "^7.0.0",
+    "kleur": "^3.0.3",
     "marked": "0",
-    "node-emoji": "^1.8.1"
+    "node-emoji": "^1.10.0"
   }
 }
