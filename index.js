@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const getStdin = require('get-stdin');
-const boolean = require('boolean');
-const marked = require('marked');
+const boolean = require('boolean').boolean;
+const marked = require('marked').marked;
 const kleur = require('kleur');
 const cp = require('child_process');
 const path = require('path');

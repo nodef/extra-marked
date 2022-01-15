@@ -2,7 +2,7 @@ const kleur = require('kleur');
 const Table = require('cli-table');
 const cardinal = require('cardinal');
 const emoji = require('node-emoji');
-const boolean = require('boolean');
+const boolean = require('boolean').boolean;
 
 
 // Global variables.
