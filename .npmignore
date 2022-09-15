@@ -1,5 +1,22 @@
-# scripts
-scripts/
+# Source only
+.gitmodules
+.github/
+.docs/
+src/
+data/
+wiki/
+tests/
+unused/
+test.js
+CITATION.cff
+TODO
 
-# build
+# Build
+.build/
+coverage/
+.travis.yml
+.coveralls.yml
+tsconfig.json
+jest.config.js
+rollup.config.js
 build.js

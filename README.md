@@ -5,7 +5,7 @@ A markdown parser, compiler, and viewer (via ["marked"]).
 <br>
 
 
-## setup
+## Setup
 
 1. Install [Node.js], if not installed.
 2. Run `npm install -g extra-marked` in [console].
@@ -13,7 +13,7 @@ A markdown parser, compiler, and viewer (via ["marked"]).
 <br>
 
 
-## console
+## Console
 
 ```bash
 marked README.md
@@ -40,7 +40,7 @@ marked -i README.md --view_heading red.bold
 # (view is enabled by default when not piping)
 ```
 
-### reference
+### Reference
 
 ```bash
 marked [options] <input>
@@ -153,7 +153,7 @@ $MARKED_VIEW_TAB               # set tab (4)
 <br>
 
 
-## package
+## Package
 
 ```javascript
 const marked = require('extra-marked');
@@ -173,7 +173,7 @@ marked.view('get **markdown** view', {strong: kleur.red().bold});
 // \u001b[0mget \u001b[1m\u001b[31mmarkdown\u001b[39m\u001b[22m view\u001b[0m\n\n
 ```
 
-### reference
+### Reference
 
 ```javascript
 const marked = require('extra-marked');
@@ -242,7 +242,7 @@ options = {
 <br>
 
 
-## similar
+## Similar
 
 Do you need anything similar?
 - [parse5] can parse and serialize HTML.
