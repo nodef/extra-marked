@@ -264,6 +264,8 @@ Suggestions are welcome. Please [create an issue].
 [esprima]: https://www.npmjs.com/package/esprima
 [create an issue]: https://github.com/nodef/extra-marked/issues
 
+![](https://ga-beacon.deno.dev/G-RC63DPBH3P:SH3Eq-NoQ9mwgYeHWxu7cw/github.com/nodef/extra-marked)
+
 [marked-terminal]: https://www.npmjs.com/package/marked-terminal
 [markcat]: https://www.npmjs.com/package/markcat
 [kleur]: https://www.npmjs.com/package/kleur
